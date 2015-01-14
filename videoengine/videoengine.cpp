@@ -98,11 +98,11 @@ void VideoEngine::run()
         emit sendInputImage(cvMatToQImage(cvFrame));
 
         // Process Video Frame
-        if (processor != 0){
-            cvFrame = processor->process(cvFrame);
-        }
+        //if (processor != 0){
+        //    cvFrame = processor->process(cvFrame);
+        //}
 
-        emit sendProcessedImage(cvMatToQImage(cvFrame));
+        //emit sendProcessedImage(cvMatToQImage(cvFrame));
 
         // check if stopped
         QMutexLocker locker(&mutex);
