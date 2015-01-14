@@ -13,9 +13,11 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        control.cpp
+        control.cpp \
+        filterProcessor.cpp
 
-HEADERS  += control.h
+HEADERS  += control.h \
+        filterProcessor.cpp
 
 FORMS    += control.ui
 

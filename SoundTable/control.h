@@ -2,6 +2,7 @@
 #define CONTROL_H
 
 #include <QMainWindow>
+#include "filterProcessor.h"
 #include "videoengine.h"
 
 namespace Ui {
@@ -24,6 +25,7 @@ private slots:
 private:
     Ui::Control *ui;
     VideoEngine *videoThread;
+    FilterProcessor* filterProcessor;
 };
 
 #endif // CONTROL_H

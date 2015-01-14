@@ -50,6 +50,7 @@ OBJECTS_DIR   = ./
 
 SOURCES       = ../SoundTable/main.cpp \
 		../SoundTable/control.cpp \
+		../SoundTable/filterProcessor.cpp \
 		../videoengine/videoengine.cpp \
 		../videoengine/videowidget.cpp \
 		../videoengine/videoformat.cpp moc_control.cpp \
@@ -57,6 +58,7 @@ SOURCES       = ../SoundTable/main.cpp \
 		moc_videowidget.cpp
 OBJECTS       = main.o \
 		control.o \
+		filterProcessor.o \
 		videoengine.o \
 		videowidget.o \
 		videoformat.o \
@@ -170,6 +172,7 @@ DIST          = /Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/spec_
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/qt_config.prf \
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/macx-clang/qmake.conf \
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/spec_post.prf \
+		../SoundTable/.qmake.stash \
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/exclusive_builds.prf \
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/default_pre.prf \
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/mac/default_pre.prf \
@@ -193,12 +196,14 @@ DIST          = /Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/spec_
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/yacc.prf \
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/lex.prf \
 		../SoundTable/SoundTable.pro ../SoundTable/control.h \
+		../SoundTable/filterProcessor.cpp \
 		../videoengine/videoengine.h \
 		../videoengine/videowidget.h \
 		../videoengine/cvmattoqimage.h \
 		../videoengine/videoprocessor.h \
 		../videoengine/videoformat.h ../SoundTable/main.cpp \
 		../SoundTable/control.cpp \
+		../SoundTable/filterProcessor.cpp \
 		../videoengine/videoengine.cpp \
 		../videoengine/videowidget.cpp \
 		../videoengine/videoformat.cpp
@@ -350,6 +355,7 @@ Makefile: ../SoundTable/SoundTable.pro /Users/jenswoltering/Qt5.4.0/5.4/clang_64
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/qt_config.prf \
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/macx-clang/qmake.conf \
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/exclusive_builds.prf \
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/default_pre.prf \
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/mac/default_pre.prf \
@@ -484,6 +490,7 @@ Makefile: ../SoundTable/SoundTable.pro /Users/jenswoltering/Qt5.4.0/5.4/clang_64
 /Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/qt_config.prf:
 /Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/macx-clang/qmake.conf:
 /Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/spec_post.prf:
+.qmake.stash:
 /Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/exclusive_builds.prf:
 /Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/default_pre.prf:
 /Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/mac/default_pre.prf:
@@ -539,8 +546,8 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents ../SoundTable/control.h ../videoengine/videoengine.h ../videoengine/videowidget.h ../videoengine/cvmattoqimage.h ../videoengine/videoprocessor.h ../videoengine/videoformat.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../SoundTable/main.cpp ../SoundTable/control.cpp ../videoengine/videoengine.cpp ../videoengine/videowidget.cpp ../videoengine/videoformat.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../SoundTable/control.h ../SoundTable/filterProcessor.cpp ../videoengine/videoengine.h ../videoengine/videowidget.h ../videoengine/cvmattoqimage.h ../videoengine/videoprocessor.h ../videoengine/videoformat.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../SoundTable/main.cpp ../SoundTable/control.cpp ../SoundTable/filterProcessor.cpp ../videoengine/videoengine.cpp ../videoengine/videowidget.cpp ../videoengine/videoformat.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../SoundTable/control.ui $(DISTDIR)/
 
 
@@ -571,6 +578,49 @@ compiler_moc_header_clean:
 	-$(DEL_FILE) moc_control.cpp moc_videoengine.cpp moc_videowidget.cpp
 moc_control.cpp: /Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QMainWindow \
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qmainwindow.h \
+		../SoundTable/filterProcessor.h \
+		../videoengine/videoprocessor.h \
+		/usr/local/include/opencv2/opencv.hpp \
+		/usr/local/include/opencv2/core/core_c.h \
+		/usr/local/include/opencv2/core/types_c.h \
+		/usr/local/include/opencv2/core/core.hpp \
+		/usr/local/include/opencv2/core/version.hpp \
+		/usr/local/include/opencv2/core/operations.hpp \
+		/usr/local/include/opencv2/core/mat.hpp \
+		/usr/local/include/opencv2/flann/miniflann.hpp \
+		/usr/local/include/opencv2/flann/defines.h \
+		/usr/local/include/opencv2/flann/config.h \
+		/usr/local/include/opencv2/imgproc/imgproc_c.h \
+		/usr/local/include/opencv2/imgproc/types_c.h \
+		/usr/local/include/opencv2/imgproc/imgproc.hpp \
+		/usr/local/include/opencv2/photo/photo.hpp \
+		/usr/local/include/opencv2/photo/photo_c.h \
+		/usr/local/include/opencv2/video/video.hpp \
+		/usr/local/include/opencv2/video/tracking.hpp \
+		/usr/local/include/opencv2/video/background_segm.hpp \
+		/usr/local/include/opencv2/features2d/features2d.hpp \
+		/usr/local/include/opencv2/objdetect/objdetect.hpp \
+		/usr/local/include/opencv2/calib3d/calib3d.hpp \
+		/usr/local/include/opencv2/core/affine.hpp \
+		/usr/local/include/opencv2/ml/ml.hpp \
+		/usr/local/include/opencv2/highgui/highgui_c.h \
+		/usr/local/include/opencv2/highgui/highgui.hpp \
+		/usr/local/include/opencv2/contrib/contrib.hpp \
+		/usr/local/include/opencv2/contrib/retina.hpp \
+		/usr/local/include/opencv2/contrib/openfabmap.hpp \
+		../videoengine/videoformat.h \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QDebug \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qdebug.h \
+		../videoengine/videoengine.h \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QThread \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qthread.h \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/QImage \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/qimage.h \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QMutex \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qmutex.h \
+		../videoengine/cvmattoqimage.h \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/QPixmap \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/qpixmap.h \
 		../SoundTable/control.h
 	/Users/jenswoltering/Qt5.4.0/5.4/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -I/Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/macx-clang -I'/Users/jenswoltering/Documents/Studium/5 Semster/AVPRG/SoundTable/SoundTable' -I'/Users/jenswoltering/Documents/Studium/5 Semster/AVPRG/SoundTable/videoengine' -I/usr/local/include -I/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtWidgets.framework/Headers -I/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtGui.framework/Headers -I/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Headers -I. -F/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib ../SoundTable/control.h -o moc_control.cpp
 
@@ -630,7 +680,12 @@ compiler_moc_source_clean:
 compiler_uic_make_all: ui_control.h
 compiler_uic_clean:
 	-$(DEL_FILE) ui_control.h
-ui_control.h: ../SoundTable/control.ui
+ui_control.h: ../SoundTable/control.ui \
+		../videoengine/videowidget.h \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QLabel \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qlabel.h \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/QImage \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/qimage.h
 	/Users/jenswoltering/Qt5.4.0/5.4/clang_64/bin/uic ../SoundTable/control.ui -o ui_control.h
 
 compiler_rez_source_make_all:
@@ -648,6 +703,49 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 main.o: ../SoundTable/main.cpp ../SoundTable/control.h \
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QMainWindow \
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qmainwindow.h \
+		../SoundTable/filterProcessor.h \
+		../videoengine/videoprocessor.h \
+		/usr/local/include/opencv2/opencv.hpp \
+		/usr/local/include/opencv2/core/core_c.h \
+		/usr/local/include/opencv2/core/types_c.h \
+		/usr/local/include/opencv2/core/core.hpp \
+		/usr/local/include/opencv2/core/version.hpp \
+		/usr/local/include/opencv2/core/operations.hpp \
+		/usr/local/include/opencv2/core/mat.hpp \
+		/usr/local/include/opencv2/flann/miniflann.hpp \
+		/usr/local/include/opencv2/flann/defines.h \
+		/usr/local/include/opencv2/flann/config.h \
+		/usr/local/include/opencv2/imgproc/imgproc_c.h \
+		/usr/local/include/opencv2/imgproc/types_c.h \
+		/usr/local/include/opencv2/imgproc/imgproc.hpp \
+		/usr/local/include/opencv2/photo/photo.hpp \
+		/usr/local/include/opencv2/photo/photo_c.h \
+		/usr/local/include/opencv2/video/video.hpp \
+		/usr/local/include/opencv2/video/tracking.hpp \
+		/usr/local/include/opencv2/video/background_segm.hpp \
+		/usr/local/include/opencv2/features2d/features2d.hpp \
+		/usr/local/include/opencv2/objdetect/objdetect.hpp \
+		/usr/local/include/opencv2/calib3d/calib3d.hpp \
+		/usr/local/include/opencv2/core/affine.hpp \
+		/usr/local/include/opencv2/ml/ml.hpp \
+		/usr/local/include/opencv2/highgui/highgui_c.h \
+		/usr/local/include/opencv2/highgui/highgui.hpp \
+		/usr/local/include/opencv2/contrib/contrib.hpp \
+		/usr/local/include/opencv2/contrib/retina.hpp \
+		/usr/local/include/opencv2/contrib/openfabmap.hpp \
+		../videoengine/videoformat.h \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QDebug \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qdebug.h \
+		../videoengine/videoengine.h \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QThread \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qthread.h \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/QImage \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/qimage.h \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QMutex \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qmutex.h \
+		../videoengine/cvmattoqimage.h \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/QPixmap \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/qpixmap.h \
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QApplication \
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qapplication.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../SoundTable/main.cpp
@@ -655,8 +753,89 @@ main.o: ../SoundTable/main.cpp ../SoundTable/control.h \
 control.o: ../SoundTable/control.cpp ../SoundTable/control.h \
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QMainWindow \
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qmainwindow.h \
-		ui_control.h
+		../SoundTable/filterProcessor.h \
+		../videoengine/videoprocessor.h \
+		/usr/local/include/opencv2/opencv.hpp \
+		/usr/local/include/opencv2/core/core_c.h \
+		/usr/local/include/opencv2/core/types_c.h \
+		/usr/local/include/opencv2/core/core.hpp \
+		/usr/local/include/opencv2/core/version.hpp \
+		/usr/local/include/opencv2/core/operations.hpp \
+		/usr/local/include/opencv2/core/mat.hpp \
+		/usr/local/include/opencv2/flann/miniflann.hpp \
+		/usr/local/include/opencv2/flann/defines.h \
+		/usr/local/include/opencv2/flann/config.h \
+		/usr/local/include/opencv2/imgproc/imgproc_c.h \
+		/usr/local/include/opencv2/imgproc/types_c.h \
+		/usr/local/include/opencv2/imgproc/imgproc.hpp \
+		/usr/local/include/opencv2/photo/photo.hpp \
+		/usr/local/include/opencv2/photo/photo_c.h \
+		/usr/local/include/opencv2/video/video.hpp \
+		/usr/local/include/opencv2/video/tracking.hpp \
+		/usr/local/include/opencv2/video/background_segm.hpp \
+		/usr/local/include/opencv2/features2d/features2d.hpp \
+		/usr/local/include/opencv2/objdetect/objdetect.hpp \
+		/usr/local/include/opencv2/calib3d/calib3d.hpp \
+		/usr/local/include/opencv2/core/affine.hpp \
+		/usr/local/include/opencv2/ml/ml.hpp \
+		/usr/local/include/opencv2/highgui/highgui_c.h \
+		/usr/local/include/opencv2/highgui/highgui.hpp \
+		/usr/local/include/opencv2/contrib/contrib.hpp \
+		/usr/local/include/opencv2/contrib/retina.hpp \
+		/usr/local/include/opencv2/contrib/openfabmap.hpp \
+		../videoengine/videoformat.h \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QDebug \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qdebug.h \
+		../videoengine/videoengine.h \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QThread \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qthread.h \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/QImage \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/qimage.h \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QMutex \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qmutex.h \
+		../videoengine/cvmattoqimage.h \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/QPixmap \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/qpixmap.h \
+		ui_control.h \
+		../videoengine/videowidget.h \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QLabel \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qlabel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o control.o ../SoundTable/control.cpp
+
+filterProcessor.o: ../SoundTable/filterProcessor.cpp ../SoundTable/filterProcessor.h \
+		../videoengine/videoprocessor.h \
+		/usr/local/include/opencv2/opencv.hpp \
+		/usr/local/include/opencv2/core/core_c.h \
+		/usr/local/include/opencv2/core/types_c.h \
+		/usr/local/include/opencv2/core/core.hpp \
+		/usr/local/include/opencv2/core/version.hpp \
+		/usr/local/include/opencv2/core/operations.hpp \
+		/usr/local/include/opencv2/core/mat.hpp \
+		/usr/local/include/opencv2/flann/miniflann.hpp \
+		/usr/local/include/opencv2/flann/defines.h \
+		/usr/local/include/opencv2/flann/config.h \
+		/usr/local/include/opencv2/imgproc/imgproc_c.h \
+		/usr/local/include/opencv2/imgproc/types_c.h \
+		/usr/local/include/opencv2/imgproc/imgproc.hpp \
+		/usr/local/include/opencv2/photo/photo.hpp \
+		/usr/local/include/opencv2/photo/photo_c.h \
+		/usr/local/include/opencv2/video/video.hpp \
+		/usr/local/include/opencv2/video/tracking.hpp \
+		/usr/local/include/opencv2/video/background_segm.hpp \
+		/usr/local/include/opencv2/features2d/features2d.hpp \
+		/usr/local/include/opencv2/objdetect/objdetect.hpp \
+		/usr/local/include/opencv2/calib3d/calib3d.hpp \
+		/usr/local/include/opencv2/core/affine.hpp \
+		/usr/local/include/opencv2/ml/ml.hpp \
+		/usr/local/include/opencv2/highgui/highgui_c.h \
+		/usr/local/include/opencv2/highgui/highgui.hpp \
+		/usr/local/include/opencv2/contrib/contrib.hpp \
+		/usr/local/include/opencv2/contrib/retina.hpp \
+		/usr/local/include/opencv2/contrib/openfabmap.hpp \
+		../videoengine/videoformat.h \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QDebug \
+		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qdebug.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o filterProcessor.o ../SoundTable/filterProcessor.cpp
 
 videoengine.o: ../videoengine/videoengine.cpp /usr/local/include/opencv2/opencv.hpp \
 		/usr/local/include/opencv2/core/core_c.h \
