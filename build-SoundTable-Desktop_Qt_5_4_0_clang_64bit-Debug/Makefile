@@ -196,7 +196,7 @@ DIST          = /Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/spec_
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/yacc.prf \
 		/Users/jenswoltering/Qt5.4.0/5.4/clang_64/mkspecs/features/lex.prf \
 		../SoundTable/SoundTable.pro ../SoundTable/control.h \
-		../SoundTable/filterProcessor.cpp \
+		../SoundTable/filterProcessor.h \
 		../videoengine/videoengine.h \
 		../videoengine/videowidget.h \
 		../videoengine/cvmattoqimage.h \
@@ -546,7 +546,7 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents ../SoundTable/control.h ../SoundTable/filterProcessor.cpp ../videoengine/videoengine.h ../videoengine/videowidget.h ../videoengine/cvmattoqimage.h ../videoengine/videoprocessor.h ../videoengine/videoformat.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../SoundTable/control.h ../SoundTable/filterProcessor.h ../videoengine/videoengine.h ../videoengine/videowidget.h ../videoengine/cvmattoqimage.h ../videoengine/videoprocessor.h ../videoengine/videoformat.h $(DISTDIR)/
 	$(COPY_FILE) --parents ../SoundTable/main.cpp ../SoundTable/control.cpp ../SoundTable/filterProcessor.cpp ../videoengine/videoengine.cpp ../videoengine/videowidget.cpp ../videoengine/videoformat.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../SoundTable/control.ui $(DISTDIR)/
 

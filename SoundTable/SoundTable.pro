@@ -17,7 +17,7 @@ SOURCES += main.cpp\
         filterProcessor.cpp
 
 HEADERS  += control.h \
-        filterProcessor.cpp
+        filterProcessor.h
 
 FORMS    += control.ui
 

@@ -32,7 +32,7 @@ class Ui_Control
 public:
     QWidget *centralWidget;
     VideoWidget *inputFrame;
-    VideoWidget *inputFrame_2;
+    VideoWidget *processedFrame;
     QPushButton *captureButton;
     QGroupBox *groupBox;
     QCheckBox *checkBox;
@@ -57,12 +57,12 @@ public:
         inputFrame->setFrameShape(QFrame::Box);
         inputFrame->setScaledContents(false);
         inputFrame->setAlignment(Qt::AlignCenter);
-        inputFrame_2 = new VideoWidget(centralWidget);
-        inputFrame_2->setObjectName(QStringLiteral("inputFrame_2"));
-        inputFrame_2->setGeometry(QRect(360, 10, 320, 240));
-        inputFrame_2->setFrameShape(QFrame::Box);
-        inputFrame_2->setScaledContents(false);
-        inputFrame_2->setAlignment(Qt::AlignCenter);
+        processedFrame = new VideoWidget(centralWidget);
+        processedFrame->setObjectName(QStringLiteral("processedFrame"));
+        processedFrame->setGeometry(QRect(360, 10, 320, 240));
+        processedFrame->setFrameShape(QFrame::Box);
+        processedFrame->setScaledContents(false);
+        processedFrame->setAlignment(Qt::AlignCenter);
         captureButton = new QPushButton(centralWidget);
         captureButton->setObjectName(QStringLiteral("captureButton"));
         captureButton->setGeometry(QRect(20, 270, 321, 81));
@@ -107,7 +107,7 @@ public:
     {
         Control->setWindowTitle(QApplication::translate("Control", "Control", 0));
         inputFrame->setText(QString());
-        inputFrame_2->setText(QString());
+        processedFrame->setText(QString());
         captureButton->setText(QApplication::translate("Control", "Capture", 0));
         groupBox->setTitle(QApplication::translate("Control", "Filtereinstellungen", 0));
         checkBox->setText(QApplication::translate("Control", "CheckBox", 0));

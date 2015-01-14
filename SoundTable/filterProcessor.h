@@ -13,8 +13,10 @@ public:
     void setOpeningEnable(bool enable);
 private:
     cv::Mat filter(cv::Mat& hsvFrame);
+    cv::Vec3b getAvgPixel(cv::Mat& hsvFrame);
 private:
     cv::Point center;
+    int frameCount;
     bool useMedian;
     bool useOpening;
 };
