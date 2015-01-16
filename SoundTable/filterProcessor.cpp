@@ -4,8 +4,8 @@ using namespace cv;
 
 
 FilterProcessor::FilterProcessor()
-    : useMedian(false)
-    , useOpening(false)
+    : useMedian(true)
+    , useOpening(true)
     , frameCount(0)
 {
 }
@@ -44,6 +44,11 @@ Mat FilterProcessor::filter(Mat& hsvFrame){
     Vec3b avgPixel;
     if (frameCount==0){
       Vec3b avgPixel = getAvgPixel(hsvFrame);
+      qDebug() << "hue: " << avgPixel[0];
+      qDebug() << "sat: " << avgPixel[1];
+      qDebug() << "val: " << avgPixel[2];
+      avgPixel[2]=avgPixel[2]-(avgPixel[0]/100*15);
+
     }
 
     for(int x = 0; x < hsvFrame.cols; x++){
@@ -55,8 +60,10 @@ Mat FilterProcessor::filter(Mat& hsvFrame){
 
             bool isWhite = false;
 
-            if (value<=avgPixel[2]){
-                isWhite=true;
+            if (hue<=avgPixel[0]){
+
+                        isWhite=true;
+
             }
 
 
@@ -74,14 +81,27 @@ Mat FilterProcessor::filter(Mat& hsvFrame){
 }
 
 Vec3b FilterProcessor::getAvgPixel(Mat& hsvFrame){
-    Scalar avgPixel= cv::mean(hsvFrame);
-    Mat helpHSV;
-    Mat helpMat(1, 1, CV_8UC3,avgPixel);
-    cvtColor(helpMat,helpHSV,CV_BGR2HSV);
-    return helpHSV.at<Vec3b>(1,1);
+    Vec3b avgPixel;
+    int avgHue = 0;
+    int avgSat=0;
+    int avgVal=0;
 
+    for(int x = 0; x < hsvFrame.cols; x++){
+        for(int y = 0; y < hsvFrame.rows; y++){
+            avgHue=avgHue+hsvFrame.at<Vec3b>(y,x)[0];
+            avgSat=avgSat+hsvFrame.at<Vec3b>(y,x)[1];
+            avgVal=avgVal+hsvFrame.at<Vec3b>(y,x)[2];
+        }
+    }
+    avgHue=avgHue/(hsvFrame.cols*hsvFrame.rows);
+    avgSat=avgSat/(hsvFrame.cols*hsvFrame.rows);
+    avgVal=avgVal/(hsvFrame.cols*hsvFrame.rows);
+    avgPixel[0]=avgHue;
+    avgPixel[1]=avgSat;
+    avgPixel[2]=avgVal;
+
+    return avgPixel;
 }
-
 
 void FilterProcessor::setMedianEnable(bool enable){
     this->useMedian = enable;
