@@ -18,6 +18,9 @@ private:
 private:
     cv::Point center;
     int frameCount;
+    int avgCalcTime;
+    int avgDistanceThreshold;
+    int noiseAreaSize;
     bool useMedian;
     bool useOpening;
     bool useNoiseRecutiob;

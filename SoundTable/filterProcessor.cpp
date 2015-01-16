@@ -50,7 +50,6 @@ Mat FilterProcessor::filter(Mat& hsvFrame){
       qDebug() << "hue: " << avgPixel[0];
       qDebug() << "sat: " << avgPixel[1];
       qDebug() << "val: " << avgPixel[2];
-      avgPixel[2]=avgPixel[2]-(avgPixel[0]/100*15);
 
     }
 
@@ -73,8 +72,6 @@ Mat FilterProcessor::filter(Mat& hsvFrame){
 
 
             }
-
-
 
 
             if (isWhite){
