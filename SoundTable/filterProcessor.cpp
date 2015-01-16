@@ -6,6 +6,7 @@ using namespace cv;
 FilterProcessor::FilterProcessor()
     : useMedian(true)
     , useOpening(true)
+    , useNoiseRecutiob(true)
     , frameCount(0)
 {
 }
@@ -26,11 +27,13 @@ Mat FilterProcessor::process(const Mat &input){
     }
 
     if (useOpening){
-        erode(binaryMask, binaryMask, Mat());
+        //erode(binaryMask, binaryMask, Mat());
         dilate(binaryMask, binaryMask, Mat());
     }
 
-
+    if(useNoiseRecutiob){
+        binaryMask=noiseRecution(binaryMask);
+    }
     // convert binary Image to 3 channel image
     Mat output;
     cvtColor(binaryMask, output, CV_GRAY2BGR);
@@ -43,7 +46,7 @@ Mat FilterProcessor::filter(Mat& hsvFrame){
     Mat output(hsvFrame.rows, hsvFrame.cols, CV_8UC1);
     Vec3b avgPixel;
     if (frameCount==0){
-      Vec3b avgPixel = getAvgPixel(hsvFrame);
+      avgPixel = getAvgPixel(hsvFrame);
       qDebug() << "hue: " << avgPixel[0];
       qDebug() << "sat: " << avgPixel[1];
       qDebug() << "val: " << avgPixel[2];
@@ -60,9 +63,14 @@ Mat FilterProcessor::filter(Mat& hsvFrame){
 
             bool isWhite = false;
 
-            if (hue<=avgPixel[0]){
-
+            if ((hue <= avgPixel[0]-15) || (hue>= avgPixel[0]+15) ){
+                if ((saturation <= avgPixel[1]-15) || (saturation>= avgPixel[1]+15) ){
+                    if ((value <= avgPixel[2]-15) || (value>= avgPixel[2]+15) ){
                         isWhite=true;
+                    }
+                }
+
+
 
             }
 
@@ -85,7 +93,7 @@ Vec3b FilterProcessor::getAvgPixel(Mat& hsvFrame){
     int avgHue = 0;
     int avgSat=0;
     int avgVal=0;
-
+    GaussianBlur(hsvFrame,hsvFrame,Size(15,15),0,0);
     for(int x = 0; x < hsvFrame.cols; x++){
         for(int y = 0; y < hsvFrame.rows; y++){
             avgHue=avgHue+hsvFrame.at<Vec3b>(y,x)[0];
@@ -101,6 +109,28 @@ Vec3b FilterProcessor::getAvgPixel(Mat& hsvFrame){
     avgPixel[2]=avgVal;
 
     return avgPixel;
+}
+
+Mat FilterProcessor::noiseRecution(Mat& binaryMask){
+    Mat copyOfMask;
+    binaryMask.copyTo(copyOfMask);
+
+        // find all regions
+        vector<vector<Point> >contours;
+        findContours(copyOfMask, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+
+        // erase small regions
+
+        for(int i = 0; i < contours.size(); i++){
+            vector<Point>contour = contours[i];
+            int area = contourArea(contour);
+            if (area < 50){
+                drawContours(binaryMask, contours, i, Scalar(0, 0, 0, 0), CV_FILLED);
+            }
+        }
+
+       return binaryMask;
+
 }
 
 void FilterProcessor::setMedianEnable(bool enable){
