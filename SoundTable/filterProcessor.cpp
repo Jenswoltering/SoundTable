@@ -1,21 +1,26 @@
 #include "filterProcessor.h"
+#include <opencv2/opencv.hpp>
 #include <QDebug>
 using namespace cv;
-
+using namespace std;
 
 FilterProcessor::FilterProcessor()
     : useMedian(false)
     , useOpening(false)
 {
+    //pMOG2 = new cv::BackgroundSubtractorMOG2();
 }
 
 Mat FilterProcessor::process(const Mat &input){
     // convert BGR -> HSV
     Mat hsvFrame;
+    Mat frame;
     cvtColor(input, hsvFrame, CV_BGR2HSV);
-
+    Mat fgMaskMOG2;
+    frame=input;
     // perform color keying
-    Mat binaryMask = filter(hsvFrame);
+    Mat binaryMask = filter(frame);
+
 
     if (useMedian){
         medianBlur(binaryMask, binaryMask, 5);
@@ -34,27 +39,33 @@ Mat FilterProcessor::process(const Mat &input){
 
     return output;
 }
-Mat FilterProcessor::filter(Mat& hsvFrame){
+Mat FilterProcessor::filter(Mat& frame){
+/*
     // initialize Mat object for output
+
     Mat output(hsvFrame.rows, hsvFrame.cols, CV_8UC1);
 
-    for(int x = 0; x < hsvFrame.cols; x++){
+   for(int x = 0; x < hsvFrame.cols; x++){
         for(int y = 0; y < hsvFrame.rows; y++){
             Vec3b hsvPixel = hsvFrame.at<Vec3b>(y,x);
 
 
-            // Maskierung und Schwerpunktsberechnung
+           // Maskierung und Schwerpunktsberechnung
             bool isWhite = false;
 
             if (isWhite){
-                output.at<uchar>(y,x) = 255;
+               output.at<uchar>(y,x) = 255;
             }
             else{
                 output.at<uchar>(y,x) = 0;
             }
         }
     }
-    return output;
+ */
+
+    Mat fgMaskMOG2;
+   // pMOG2->operator ()(frame,fgMaskMOG2);
+    return fgMaskMOG2;
 }
 
 
