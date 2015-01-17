@@ -5,8 +5,10 @@ Control::Control(QWidget *parent) :
     QMainWindow(parent)
   , ui(new Ui::Control)
   , videoThread(new VideoEngine)
+  , filterProcessor(new FilterProcessor())
 {
     ui->setupUi(this);
+    videoThread->setProcessor(filterProcessor);
     connect(videoThread, SIGNAL(sendInputImage(const QImage&)), ui->inputFrame, SLOT(setImage(const QImage&)));
     connect(videoThread, SIGNAL(sendProcessedImage(const QImage&)), ui->ProcessedImage, SLOT(setImage(const QImage&)));
 }
@@ -24,3 +26,9 @@ void Control::on_captureButton_clicked()
     videoThread->start();
 }
 
+
+void Control::on_pushButton_clicked()
+{
+    videoThread->openFile("/Users/jenswoltering/Documents/Studium/5 Semster/AVPRG/SoundTable/10837127_766369763410280_677005287_n.mp4");
+    videoThread->start();
+}

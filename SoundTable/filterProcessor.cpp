@@ -8,72 +8,109 @@ using namespace cv;
 
 
 FilterProcessor::FilterProcessor()
-    : useMedian(false)
-    , useOpening(false)
+    : useMedian(true)
+    , useOpening(true)
+    , useNoiseRecutiob(true)
+    , bufferMode(false)
+    , frameCount(0)
 {
-    pMOG2 = new cv::BackgroundSubtractorMOG2(25,16,false);
+    pMOG2 = new cv::BackgroundSubtractorMOG(5000,0,0.1,0);
 }
 
 Mat FilterProcessor::process(const Mat &input){
-    // convert BGR -> HSV
-
-    Mat hsvFrame;
+    Mat binaryMask;
     Mat frame;
-    cvtColor(input, hsvFrame, CV_BGR2HSV);
-    frame=input;
-    // perform color keying
-    Mat binaryMask = filter(frame);
+    if(bufferMode){
+        if (frameCount!=0){
+            input.convertTo(frame, -1, 2, 0);
 
+            // perform filter
 
-    if (useMedian){
-        medianBlur(binaryMask, binaryMask, 5);
-    }
+            binaryMask = filter(frame);
 
-    if (useOpening){
-        erode(binaryMask, binaryMask, Mat());
-        dilate(binaryMask, binaryMask, Mat());
-    }
-
-
-    // convert binary Image to 3 channel image
-    Mat output;
-    cvtColor(binaryMask, output, CV_GRAY2BGR);
-
-
-    return output;
-}
-Mat FilterProcessor::filter(Mat& frame){
-/*
-    // initialize Mat object for output
-
-    Mat output(hsvFrame.rows, hsvFrame.cols, CV_8UC1);
-
-   for(int x = 0; x < hsvFrame.cols; x++){
-        for(int y = 0; y < hsvFrame.rows; y++){
-            Vec3b hsvPixel = hsvFrame.at<Vec3b>(y,x);
-
-
-           // Maskierung und Schwerpunktsberechnung
-            bool isWhite = false;
-
-            if (isWhite){
-               output.at<uchar>(y,x) = 255;
+            if(useNoiseRecutiob){
+               binaryMask=noiseRecution(binaryMask);
+               bufferFrame=binaryMask;
             }
-            else{
-                output.at<uchar>(y,x) = 0;
+
+            if (useMedian){
+                medianBlur(binaryMask, binaryMask, 5);
             }
+
+            if (useOpening){
+                erode(binaryMask, binaryMask, Mat());
+                dilate(binaryMask, binaryMask, Mat());
+            }
+
+            frameCount=frameCount+1;
+            return binaryMask;
+        }else{
+            frameCount=frameCount+1;
+            if (frameCount==3){
+                frameCount=0;
+             }
+            return bufferFrame;
         }
+    }else{
+        input.convertTo(frame, -1, 2, 0);
+
+        // perform filter
+
+        binaryMask = filter(frame);
+
+        if(useNoiseRecutiob){
+           binaryMask=noiseRecution(binaryMask);
+           bufferFrame=binaryMask;
+        }
+
+        if (useMedian){
+            medianBlur(binaryMask, binaryMask, 5);
+        }
+
+        if (useOpening){
+            erode(binaryMask, binaryMask, Mat());
+            dilate(binaryMask, binaryMask, Mat());
+        }
+
+        frameCount=frameCount+1;
+        return binaryMask;
     }
- */
+   }
+Mat FilterProcessor::filter(Mat& frame){
 
     Mat fgMaskMOG2;
     Mat frametoProcess;
-    frametoProcess=frame;
-    pMOG2->operator ()(frametoProcess,fgMaskMOG2,0.1);
+    vector<Mat> channels;
+    cvtColor(frame, frametoProcess, CV_BGR2YCrCb);
+    split(frametoProcess,channels);
+    equalizeHist(channels[0], channels[0]);
+    merge(channels,frametoProcess);
+    cvtColor(frametoProcess, frametoProcess, CV_YCrCb2BGR);
+    pMOG2->operator ()(frametoProcess,fgMaskMOG2,0);
     return fgMaskMOG2;
 }
 
+Mat FilterProcessor::noiseRecution(Mat& binaryMask){
+    Mat copyOfMask;
+    binaryMask.copyTo(copyOfMask);
 
+        // find all regions
+        vector<vector<Point> >contours;
+        findContours(copyOfMask, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+
+        // erase small regions
+
+        for(int i = 0; i < contours.size(); i++){
+            vector<Point>contour = contours[i];
+            int area = contourArea(contour);
+            if (area < 64){
+                drawContours(binaryMask, contours, i, Scalar(0, 0, 0, 0), CV_FILLED);
+            }
+        }
+
+       return binaryMask;
+
+}
 
 void FilterProcessor::setMedianEnable(bool enable){
     this->useMedian = enable;

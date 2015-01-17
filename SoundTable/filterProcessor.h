@@ -15,10 +15,15 @@ public:
     void setOpeningEnable(bool enable);
 private:
     cv::Mat filter(cv::Mat& input);
+    cv::Mat noiseRecution(cv::Mat& binaryMask);
 private:
     cv::Point center;
     bool useMedian;
     bool useOpening;
+    bool useNoiseRecutiob;
+    bool bufferMode;
+    cv::Mat bufferFrame;
+    int frameCount;
     Ptr<BackgroundSubtractor> pMOG2;
 
 };
