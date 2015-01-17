@@ -8,7 +8,7 @@ Control::Control(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(videoThread, SIGNAL(sendInputImage(const QImage&)), ui->inputFrame, SLOT(setImage(const QImage&)));
-
+    connect(videoThread, SIGNAL(sendProcessedImage(const QImage&)), ui->ProcessedImage, SLOT(setImage(const QImage&)));
 }
 
 Control::~Control()

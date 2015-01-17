@@ -19,7 +19,7 @@ private:
     cv::Point center;
     bool useMedian;
     bool useOpening;
-   // Ptr<BackgroundSubtractor> pMOG2;
+    Ptr<BackgroundSubtractor> pMOG2;
 
 };
 

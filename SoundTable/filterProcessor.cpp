@@ -1,22 +1,25 @@
 #include "filterProcessor.h"
 #include <opencv2/opencv.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/video/background_segm.hpp>
 #include <QDebug>
 using namespace cv;
-using namespace std;
+
 
 FilterProcessor::FilterProcessor()
     : useMedian(false)
     , useOpening(false)
 {
-    //pMOG2 = new cv::BackgroundSubtractorMOG2();
+    pMOG2 = new cv::BackgroundSubtractorMOG2(25,16,false);
 }
 
 Mat FilterProcessor::process(const Mat &input){
     // convert BGR -> HSV
+
     Mat hsvFrame;
     Mat frame;
     cvtColor(input, hsvFrame, CV_BGR2HSV);
-    Mat fgMaskMOG2;
     frame=input;
     // perform color keying
     Mat binaryMask = filter(frame);
@@ -64,7 +67,9 @@ Mat FilterProcessor::filter(Mat& frame){
  */
 
     Mat fgMaskMOG2;
-   // pMOG2->operator ()(frame,fgMaskMOG2);
+    Mat frametoProcess;
+    frametoProcess=frame;
+    pMOG2->operator ()(frametoProcess,fgMaskMOG2,0.1);
     return fgMaskMOG2;
 }
 
